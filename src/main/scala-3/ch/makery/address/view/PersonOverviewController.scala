@@ -56,7 +56,7 @@ class PersonOverviewController():
         lastNameLabel.text <== person.lastName
         streetLabel.text <== person.street
         cityLabel.text <== person.city;
-        postalCodeLabel.text <= person.postalCode.delegate.asString()
+        postalCodeLabel.text <== person.postalCode.delegate.asString()
         birthdayLabel.text <== Bindings.createStringBinding(()=>{
           person.date.value.asString
         },person.date)
@@ -76,6 +76,7 @@ class PersonOverviewController():
         postalCodeLabel.text = ""
         cityLabel.text = ""
         birthdayLabel.text = ""
+
   @FXML
   def handleDeletePerson(action: ActionEvent): Unit =
     val selectedIndex = personTable.selectionModel().selectedIndex.value
@@ -89,3 +90,29 @@ class PersonOverviewController():
         headerText = "No Person Selected"
         contentText = "Please select a person in the table."
       alert.showAndWait()
+
+  @FXML
+  def handleNewPerson(action: ActionEvent) =
+    val person = new Person("", "")
+    val okClicked = MainApp.showPersonEditDialog(person);
+    if (okClicked) then
+      MainApp.personData += person
+
+  @FXML
+  def handleEditPerson(action: ActionEvent) =
+    val selectedPerson = personTable.selectionModel().selectedItem.value
+    if (selectedPerson != null) then
+      val okClicked = MainApp.showPersonEditDialog(selectedPerson)
+
+      if (okClicked) then showPersonDetails(Some(selectedPerson))
+
+    else
+      // Nothing selected.
+      val alert = new Alert(Alert.AlertType.Warning):
+        initOwner(MainApp.stage)
+        title = "No Selection"
+        headerText = "No Person Selected"
+        contentText = "Please select a person in the table."
+      alert.showAndWait()
+
+
